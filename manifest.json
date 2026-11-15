@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "PageArbiter",
+  "version": "1.0.0",
+  "description": "Real-time AI claim verifier, source checker, and rhetorical bias auditor.",
+  "permissions": ["activeTab", "contextMenus", "sidePanel", "storage"],
+  "host_permissions": ["https://generativelanguage.googleapis.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "Open PageArbiter"
+  }
+}

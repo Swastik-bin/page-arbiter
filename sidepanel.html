@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PageArbiter</title>
+  <style>
+    :root {
+      --bg: #111312;
+      --surface: #1a1d1b;
+      --border: #2c322e;
+      --text: #eceee9;
+      --muted: #9ba39d;
+      --accent: #7da88b;
+      --true: #4ade80;
+      --false: #f87171;
+      --mixed: #fbbf24;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; line-height: 1.5; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.4px; color: var(--accent); }
+    .badge { font-size: 11px; background: var(--surface); border: 1px solid var(--border); padding: 3px 8px; border-radius: 99px; color: var(--muted); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+    label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 6px; }
+    input, textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px; font-size: 13px; outline: none; }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 90px; }
+    button { width: 100%; background: var(--accent); color: #0e120f; border: none; border-radius: 8px; padding: 10px; font-weight: 600; font-size: 13px; cursor: pointer; margin-top: 10px; transition: opacity 0.15s; }
+    button:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .verdict-pill { display: inline-block; font-weight: 700; font-size: 12px; padding: 4px 10px; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; }
+    .v-TRUE { background: rgba(74, 222, 128, 0.15); color: var(--true); border: 1px solid rgba(74, 222, 128, 0.3); }
+    .v-FALSE { background: rgba(248, 113, 113, 0.15); color: var(--false); border: 1px solid rgba(248, 113, 113, 0.3); }
+    .v-MISLEADING, .v-UNVERIFIED { background: rgba(251, 191, 36, 0.15); color: var(--mixed); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .section-title { font-size: 12px; font-weight: 600; color: var(--accent); margin: 10px 0 4px; }
+    p, li { font-size: 13px; color: #d6dbd7; }
+    ul { padding-left: 16px; }
+    .sources a { display: block; font-size: 12px; color: var(--accent); text-decoration: none; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sources a:hover { text-decoration: underline; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>⚖️ PageArbiter</h1>
+    <span class="badge">Gemini 2.5 + Search</span>
+  </header>
+
+  <div class="card">
+    <label for="apiKey">Gemini API Key (Stored Locally)</label>
+    <input type="password" id="apiKey" placeholder="AIzaSy..." />
+  </div>
+
+  <div class="card">
+    <label for="claimInput">Selected Claim or Paragraph</label>
+    <textarea id="claimInput" placeholder="Highlight any text on a webpage, right-click → Verify claim with PageArbiter, or paste text here..."></textarea>
+    <button id="analyzeBtn">Audit & Fact-Check</button>
+  </div>
+
+  <div id="resultCard" class="card hidden">
+    <div id="verdictBadge" class="verdict-pill"></div>
+    <p id="summaryText"></p>
+
+    <div class="section-title">Bias & Framing Analysis</div>
+    <p id="biasText"></p>
+
+    <div class="section-title">Key Evidence</div>
+    <ul id="evidenceList"></ul>
+
+    <div id="sourcesWrap" class="hidden">
+      <div class="section-title">Live Grounded Sources</div>
+      <div id="sourcesList" class="sources"></div>
+    </div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
