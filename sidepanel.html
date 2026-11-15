@@ -6,70 +6,197 @@
   <title>PageArbiter</title>
   <style>
     :root {
-      --bg: #111312;
-      --surface: #1a1d1b;
-      --border: #2c322e;
-      --text: #eceee9;
-      --muted: #9ba39d;
-      --accent: #7da88b;
+      --bg: #0c0e0d;
+      --surface: #141715;
+      --surface-2: #1b1f1c;
+      --border: #262c28;
+      --border-focus: #84a98c;
+      --text: #eef1ef;
+      --muted: #8e9890;
+      --accent: #84a98c;
+      --accent-soft: rgba(132, 169, 140, 0.14);
       --true: #4ade80;
       --false: #f87171;
       --mixed: #fbbf24;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 16px; line-height: 1.5; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-    h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.4px; color: var(--accent); }
-    .badge { font-size: 11px; background: var(--surface); border: 1px solid var(--border); padding: 3px 8px; border-radius: 99px; color: var(--muted); }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
-    label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 6px; }
-    input, textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px; font-size: 13px; outline: none; }
-    input:focus, textarea:focus { border-color: var(--accent); }
-    textarea { resize: vertical; min-height: 90px; }
-    button { width: 100%; background: var(--accent); color: #0e120f; border: none; border-radius: 8px; padding: 10px; font-weight: 600; font-size: 13px; cursor: pointer; margin-top: 10px; transition: opacity 0.15s; }
-    button:hover { opacity: 0.9; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .verdict-pill { display: inline-block; font-weight: 700; font-size: 12px; padding: 4px 10px; border-radius: 6px; margin-bottom: 10px; text-transform: uppercase; }
-    .v-TRUE { background: rgba(74, 222, 128, 0.15); color: var(--true); border: 1px solid rgba(74, 222, 128, 0.3); }
-    .v-FALSE { background: rgba(248, 113, 113, 0.15); color: var(--false); border: 1px solid rgba(248, 113, 113, 0.3); }
-    .v-MISLEADING, .v-UNVERIFIED { background: rgba(251, 191, 36, 0.15); color: var(--mixed); border: 1px solid rgba(251, 191, 36, 0.3); }
-    .section-title { font-size: 12px; font-weight: 600; color: var(--accent); margin: 10px 0 4px; }
-    p, li { font-size: 13px; color: #d6dbd7; }
-    ul { padding-left: 16px; }
-    .sources a { display: block; font-size: 12px; color: var(--accent); text-decoration: none; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sources a:hover { text-decoration: underline; }
-    .hidden { display: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 14px; line-height: 1.5; min-height: 100vh; }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 9px; }
+    .brand-icon {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: var(--accent-soft); border: 1px solid rgba(132, 169, 140, 0.35);
+      display: grid; place-items: center; color: var(--accent);
+    }
+    .brand-title { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; color: var(--text); }
+    .brand-sub { font-size: 10px; color: var(--muted); display: block; margin-top: -2px; }
+    .icon-btn {
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+      padding: 5px 9px; border-radius: 7px; font-size: 11px; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s;
+    }
+    .icon-btn:hover { color: var(--text); border-color: var(--accent); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mixed); }
+    .dot.active { background: var(--true); box-shadow: 0 0 6px var(--true); }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 13px; margin-bottom: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+    .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+    label { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted); }
+    .char-count { font-size: 10.5px; color: var(--muted); }
+    input, textarea {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); border-radius: 8px; padding: 10px; font-size: 12.5px;
+      outline: none; transition: border-color 0.15s;
+    }
+    input:focus, textarea:focus { border-color: var(--border-focus); }
+    textarea { resize: vertical; min-height: 86px; line-height: 1.45; }
+    .presets { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .preset-chip {
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--muted);
+      font-size: 11px; padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    }
+    .preset-chip:hover { color: var(--text); border-color: var(--accent); background: var(--accent-soft); }
+    .primary-btn {
+      width: 100%; background: var(--accent); color: #0a0d0b; border: none;
+      border-radius: 8px; padding: 10px 14px; font-weight: 700; font-size: 13px;
+      cursor: pointer; margin-top: 10px; transition: all 0.15s;
+      display: flex; justify-content: center; align-items: center; gap: 7px;
+    }
+    .primary-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .primary-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .loader-card { text-align: center; padding: 20px 14px; }
+    .spinner {
+      width: 24px; height: 24px; border: 2.5px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.75s linear infinite; margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-step { font-size: 12px; color: var(--muted); }
+    .verdict-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+    }
+    .verdict-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-weight: 800; font-size: 11.5px; padding: 4px 10px;
+      border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .v-TRUE { background: rgba(74, 222, 128, 0.14); color: var(--true); border: 1px solid rgba(74, 222, 128, 0.35); }
+    .v-FALSE { background: rgba(248, 113, 113, 0.14); color: var(--false); border: 1px solid rgba(248, 113, 113, 0.35); }
+    .v-MISLEADING, .v-UNVERIFIED { background: rgba(251, 191, 36, 0.14); color: var(--mixed); border: 1px solid rgba(251, 191, 36, 0.35); }
+    .meter-wrap { margin: 10px 0 12px; background: var(--bg); padding: 9px 11px; border-radius: 8px; border: 1px solid var(--border); }
+    .meter-top { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; color: var(--muted); }
+    .meter-score { font-weight: 700; color: var(--text); }
+    .meter-track { width: 100%; height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; }
+    .meter-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 99px; transition: width 0.5s ease; }
+    .summary-text { font-size: 13px; color: var(--text); font-weight: 500; margin-bottom: 12px; }
+    .section-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--accent); margin: 12px 0 6px; }
+    .body-text { font-size: 12.5px; color: #cfd5d1; }
+    .tags-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+    .fallacy-tag {
+      font-size: 10.5px; padding: 2px 8px; border-radius: 99px;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--muted);
+    }
+    ul.evidence-list { list-style: none; padding: 0; }
+    ul.evidence-list li {
+      font-size: 12.5px; color: #cfd5d1; padding: 6px 0 6px 16px;
+      position: relative; border-bottom: 1px dashed rgba(255,255,255,0.06);
+    }
+    ul.evidence-list li:last-child { border-bottom: none; }
+    ul.evidence-list li::before {
+      content: "•"; color: var(--accent); font-weight: bold;
+      position: absolute; left: 2px; top: 6px;
+    }
+    .sources a {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; color: var(--accent); text-decoration: none;
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 7px 10px; border-radius: 7px; margin-top: 6px;
+      transition: border-color 0.15s;
+    }
+    .sources a:hover { border-color: var(--accent); }
+    .sources a span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>⚖️ PageArbiter</h1>
-    <span class="badge">Gemini 2.5 + Search</span>
-  </header>
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon">⚖️</div>
+      <div>
+        <span class="brand-title">PageArbiter</span>
+        <span class="brand-sub">AI Claim & Rhetoric Auditor</span>
+      </div>
+    </div>
+    <button id="toggleKeyBtn" class="icon-btn" title="Configure Gemini API Key">
+      <span id="keyDot" class="dot"></span>
+      <span>API Key</span>
+    </button>
+  </div>
 
-  <div class="card">
-    <label for="apiKey">Gemini API Key (Stored Locally)</label>
-    <input type="password" id="apiKey" placeholder="AIzaSy..." />
+  <div id="keyCard" class="card hidden">
+    <div class="label-row">
+      <label for="apiKey">Gemini API Key (Local Storage)</label>
+    </div>
+    <input type="password" id="apiKey" placeholder="Paste AIzaSy... key from Google AI Studio" />
   </div>
 
   <div class="card">
-    <label for="claimInput">Selected Claim or Paragraph</label>
-    <textarea id="claimInput" placeholder="Highlight any text on a webpage, right-click → Verify claim with PageArbiter, or paste text here..."></textarea>
-    <button id="analyzeBtn">Audit & Fact-Check</button>
+    <div class="label-row">
+      <label for="claimInput">Claim or Excerpt to Audit</label>
+      <span id="charCount" class="char-count">0 chars</span>
+    </div>
+    <textarea id="claimInput" placeholder="Highlight any text on a webpage → Right-click 'Verify claim with PageArbiter', or paste a claim below..."></textarea>
+
+    <div class="presets">
+      <button class="preset-chip" data-sample="Humans only use 10% of their brains, and unlocking the rest grants photographic memory.">🧪 Test Myth</button>
+      <button class="preset-chip" data-sample="Everyone knows this catastrophic policy will single-handedly destroy the entire economy overnight!">🎭 Test Bias</button>
+      <button class="preset-chip" data-sample="Water boils at 100 degrees Celsius at standard sea-level atmospheric pressure (1 atm).">✅ Test Fact</button>
+    </div>
+
+    <button id="analyzeBtn" class="primary-btn">
+      <span>Audit & Fact-Check</span>
+    </button>
+  </div>
+
+  <div id="loaderCard" class="card loader-card hidden">
+    <div class="spinner"></div>
+    <div id="loaderStep" class="loader-step">Extracting factual claims & rhetorical framing...</div>
   </div>
 
   <div id="resultCard" class="card hidden">
-    <div id="verdictBadge" class="verdict-pill"></div>
-    <p id="summaryText"></p>
+    <div class="verdict-header">
+      <div id="verdictBadge" class="verdict-pill"></div>
+      <button id="copyBtn" class="icon-btn">📋 Copy Audit</button>
+    </div>
 
-    <div class="section-title">Bias & Framing Analysis</div>
-    <p id="biasText"></p>
+    <div class="meter-wrap">
+      <div class="meter-top">
+        <span>Factual Credibility Index</span>
+        <span id="credScore" class="meter-score">0%</span>
+      </div>
+      <div class="meter-track">
+        <div id="credBar" class="meter-fill"></div>
+      </div>
+    </div>
 
-    <div class="section-title">Key Evidence</div>
-    <ul id="evidenceList"></ul>
+    <p id="summaryText" class="summary-text"></p>
+
+    <div class="section-title">Rhetorical Bias & Framing</div>
+    <p id="biasText" class="body-text"></p>
+    <div id="tagsList" class="tags-row"></div>
+
+    <div class="section-title">Verification Evidence</div>
+    <ul id="evidenceList" class="evidence-list"></ul>
 
     <div id="sourcesWrap" class="hidden">
-      <div class="section-title">Live Grounded Sources</div>
+      <div class="section-title">Reference Citations</div>
       <div id="sourcesList" class="sources"></div>
     </div>
   </div>
